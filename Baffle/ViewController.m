@@ -83,7 +83,12 @@ openssl smime -decrypt -binary -in Passport.jpeg.enc -inform DER -out PassportDe
 }
 
 - (NSData *) dataPrivateKeyDecryptData: (NSData *) toDecrypt {
-    NSData *myCertData  = [NSData dataWithContentsOfFile:@"/Users/jcarlos/Desktop/Baffle/Baffle/keys/private_key.p12"];
+    
+    NSBundle* myBundle = [NSBundle mainBundle];
+    NSString* pkpath = [myBundle pathForResource:@"private_key" ofType:@"p12"];
+
+    NSData *myCertData  = [NSData dataWithContentsOfFile:pkpath];
+    
     SecKeyRef myKey = NULL;
     SecIdentityRef myIdentity;
     SecTrustRef myTrust;
@@ -124,7 +129,9 @@ openssl smime -decrypt -binary -in Passport.jpeg.enc -inform DER -out PassportDe
 
 -(NSData *) publicKeyEncodeData: (NSData *) data
 {
-    NSData *myCertData = [NSData dataWithContentsOfFile: @"/Users/jcarlos/Desktop/Baffle/Baffle/keys/certificate.cer"];
+    NSBundle* myBundle = [NSBundle mainBundle];
+    NSString* certPath = [myBundle pathForResource:@"certificate" ofType:@"cer"];
+    NSData *myCertData = [NSData dataWithContentsOfFile: certPath];
     
     SecCertificateRef certificate = SecCertificateCreateWithData(kCFAllocatorDefault, ( __bridge CFDataRef)myCertData);
     if (certificate == nil) {
@@ -246,10 +253,10 @@ openssl smime -decrypt -binary -in Passport.jpeg.enc -inform DER -out PassportDe
 
 -(NSData *) encodeSMIMEData: (NSData *) data
 {
-    NSString *basePath = @"/Users/jcarlos/Desktop/Baffle/Baffle/keys/";
-    NSString *privateKey =   [basePath stringByAppendingString:@"private_key.p12"];
-    NSString *cert =   [basePath stringByAppendingString:@"certificate.cer"];
-    NSData *inP12data  = [NSData dataWithContentsOfFile: privateKey];
+    NSBundle* myBundle = [NSBundle mainBundle];
+    NSString* pkpath = [myBundle pathForResource:@"private_key" ofType:@"p12"];
+    NSString* cert = [myBundle pathForResource:@"certificate" ofType:@"cer"];
+    NSData *inP12data  = [NSData dataWithContentsOfFile: pkpath];
     
     SecCertificateRef certificateCA = nil;
     NSData *caData = [[NSData alloc] initWithContentsOfFile:cert];
